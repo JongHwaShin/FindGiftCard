@@ -22,8 +22,8 @@
     10% 할인 된 가격으로 살 수 있게 한 것 입니다.    
     예를 들자면 10000원권을 구입하면 10%  할인된 가격인  9000원으로 산다는 것 입니다.    
     
-    ![1](https://user-images.githubusercontent.com/59672593/110897056-147fd680-8340-11eb-9484-84d7bf7cb779.png)
-    ![2](https://user-images.githubusercontent.com/59672593/110897059-15b10380-8340-11eb-9b52-61c61abb71d7.png)
+![1](https://user-images.githubusercontent.com/59672593/110897056-147fd680-8340-11eb-9484-84d7bf7cb779.png)
+![2](https://user-images.githubusercontent.com/59672593/110897059-15b10380-8340-11eb-9b52-61c61abb71d7.png)
 
     요즘 주변 상가들을 돌아다니며 자세히 관찰해 보면,  제로페이 결제가 가능 한곳이 많고,    
     차차 제로페이에 대한 관심이 높아져 제로페이 매수가 매진되는 현상도 보이고 있습니다.    
