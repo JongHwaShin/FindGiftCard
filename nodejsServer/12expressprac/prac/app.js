@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var db_config = require(__dirname + '/config/database.js');
 var conn = db_config.init();
-
+var schedule = require('node-schedule');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -39,6 +39,17 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+let maintain_connect = schedule.scheduleJob('00 00 * * * *', () => {
+  let sql = `SELECT CURDATE() FROM DUAL;`;
+  conn.query(sql, (err, rows) => {
+    if(err){
+      console.log('connection err ! ' + err);
+    }else {
+      console.log(rows);
+    }
+  });
 });
 
 module.exports = app;
