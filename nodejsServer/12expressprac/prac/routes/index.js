@@ -35,7 +35,7 @@ router.get('/', function(req, res, next) {
         }
         for(let i = 0; i < ValueList.length; i++) {
           for(let j = 0; j < ValueList[i].length; j++){
-            values = values + ValueList[i][j] + "\t";
+            values = values + ValueList[i][j] + ",";
           }
           values = values + "\n";
        }
