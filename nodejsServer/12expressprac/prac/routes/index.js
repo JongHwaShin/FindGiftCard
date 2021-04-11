@@ -40,7 +40,13 @@ router.get('/', function(req, res, next) {
           values = values + "\n";
        }
       }
+      
       res.render('index', { title: values });
+      
+      setTimeout(()=> {
+        console.log("mysql conn end.");
+        conn.end();
+      }, 10000);
     });
   }
 });

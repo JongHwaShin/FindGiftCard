@@ -10,6 +10,8 @@ var schedule = require('node-schedule');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var locRouter = require('./routes/loc');
+var latRouter = require('./routes/lat');
+var lngRouter = require('./routes/lng');
 
 var app = express();
 
@@ -26,6 +28,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/loc', locRouter);
+app.use('/lat', latRouter);
+app.use('/lng', lngRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -51,6 +55,11 @@ let maintain_connect = schedule.scheduleJob('00 00 * * * *', () => {
     }else {
       console.log(rows);
     }
+
+    setTimeout(()=> {
+      console.log("mysql conn end.");
+      conn.end();
+    }, 10000);
   });
 });
 
