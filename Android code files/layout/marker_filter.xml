@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#D0D6F8"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1000"
+            android:gravity="center_horizontal"
+            android:text="      필터"
+            android:textSize="30sp" />
+
+        <ImageButton
+            android:id="@+id/filterClose_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="FilterClose"
+            app:srcCompat="@drawable/quantum_ic_clear_grey600_24" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="주소"
+            android:textSize="18sp" />
+
+        <AutoCompleteTextView
+            android:id="@+id/filter_addr"
+            android:layout_width="264dp"
+            android:layout_height="50dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="업종"
+            android:textSize="18sp" />
+
+        <AutoCompleteTextView
+            android:id="@+id/filter_class"
+            android:layout_width="264dp"
+            android:layout_height="50dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="업태"
+            android:textSize="18sp" />
+
+        <AutoCompleteTextView
+            android:id="@+id/filter_subClass"
+            android:layout_width="264dp"
+            android:layout_height="50dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="이름"
+            android:textSize="18sp" />
+
+        <AutoCompleteTextView
+            android:id="@+id/filter_name"
+            android:layout_width="264dp"
+            android:layout_height="50dp" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/filterSet_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="FilterOn"
+        android:text="필터링" />
+
+</LinearLayout>
