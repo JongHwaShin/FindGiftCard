@@ -214,7 +214,7 @@ public class DataIO extends Thread {
 
     private void LocationUpdate(ArrayList<ArrayList<String>> data, String tablename) {
 
-        int control_str_length = 6;
+        int control_str_length = 6; 
         String update_query = "UPDATE " + tablename + " SET %0A";
         String lat_condition = "";
         String lng_condition = "";
