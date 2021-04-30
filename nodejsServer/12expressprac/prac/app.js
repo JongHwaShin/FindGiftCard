@@ -6,6 +6,7 @@ var logger = require('morgan');
 var db_config = require(__dirname + '/config/database.js');
 var conn = db_config.init();
 var schedule = require('node-schedule');
+var phantom = require('phantom');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -61,6 +62,62 @@ let maintain_connect = schedule.scheduleJob('00 00 * * * *', () => {
       conn.end();
     }, 10000);
   });
+});
+
+let pantom_parse = schedule.scheduleJob('00 16 15 * * *', () => {
+
+  phantom
+  .create()
+  .then(ph => {
+    _ph = ph;
+    return _ph.createPage();
+  })
+  .then(page => {
+    _page = page;
+    return _page.open('http://bigdata.changwon.go.kr/nuvision/invntStts.do');
+  })
+  .then(status => {
+    console.log(`status : ${status}`);
+    return _page.evaluate(function(){
+      var tbody = document.getElementById('info');
+      var trs = tbody.getElementsByTagName('tr');
+      var returnText = "UPDATE bankinfo SET \n";
+      var p5000 = " p5000 = CASE idx \n";
+      var p10000 = " p10000 = CASE idx \n"
+      for(var i = 0; i < trs.length; i++){
+        var tds = trs[i].getElementsByTagName('td');
+        p5000 += " WHEN " + (i + 1) + " THEN '" + tds[4].textContent.replace('￦ ', '') + "'\n";
+        p10000 += " WHEN " + (i + 1) + " THEN '" + tds[5].textContent.replace('￦ ', '') + "'\n";
+        //returnText += "오천 : " + tds[4].textContent + " 만원 : " + tds[5].textContent + "\n";
+      }
+      p5000 += " ELSE p5000 END \n";
+      p10000 += " ELSE p10000 END \n";
+      returnText += p5000 + " , " + p10000 + " , updatetime = SYSDATE() \n WHERE idx > 0;";
+
+      return returnText;
+    })
+  })
+  .then(content => {
+    console.log(content);
+    datas = content;
+
+    conn.query(content, (err, rows) => {
+      if(err) {
+        console.log("mysql err : " + err);
+      }else {
+        console.log('update');
+      }
+    });
+
+    // _page.close(); 
+    // _ph.exit();
+  })
+  .then(() => {
+    console.log("fin");
+  })
+  .catch(e => console.log(`e : ${e}`));
+
+
 });
 
 module.exports = app;
