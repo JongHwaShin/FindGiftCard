@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,11 +13,21 @@ import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
+import com.kakao.sdk.user.UserApiClient;
+import com.kakao.sdk.user.model.User;
+
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import kotlin.Unit;
+import kotlin.jvm.functions.Function2;
+
 public class Review_Write_View extends AppCompatActivity {
+
+    private static final String TAG = "Review_Write_View";
+    ReviewAdapter adapter;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -32,30 +43,57 @@ public class Review_Write_View extends AppCompatActivity {
         SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd");
         String getTime = simpleDate.format(mDate);
 
+        Intent getStoreInfo = getIntent();
+        String storeName = getStoreInfo.getStringExtra("name");
+        String storeAddr = getStoreInfo.getStringExtra("addr");
+
+
+
+
         //리뷰작성버튼 클릭했을때
         reveiw_apply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //DB에 넣음
-                //SQLRun test = new SQLRun("http://3.36.81.70:3000/?q=INSERT INTO reviewtable(idx,review,rating) VALUES(3,'"+shin+"',"+f+")");
+
                 if((review_write.getText().toString()).length() == 0 ){
                     Toast.makeText(Review_Write_View.this,"리뷰내용을 입력해주세요",Toast.LENGTH_SHORT).show();
                 }
 
                 else {
-//                    SQLRun test = new SQLRun("INSERT INTO reviewtable VALUES('" + review_write.getText().toString() + "'," + review_rating.getRating() + ",'" + getTime + "')");
-//                    test.start();
+                    UserApiClient.getInstance().me(new Function2<User, Throwable, Unit>() {
+                        @Override
+                        public Unit invoke(User user, Throwable throwable) {
+                            if(user != null){
+                                String sql = "INSERT INTO reviewtable (storename, addr, review, rating, reviewtime, kakaoid) " +
+                                        "VALUES ( '" + storeName + "', '" + storeAddr + "', '" + review_write.getText().toString() + "', " +
+                                        "'" + review_rating.getRating() + "', " +
+                                        "SYSDATE(), " +
+                                        "'" + user.getKakaoAccount().getProfile().getNickname() + "' )";
 
-                    Toast.makeText(Review_Write_View.this,"리뷰가 정상적으로 입력되었습니다.",Toast.LENGTH_SHORT).show();
+                                SQLRun run = new SQLRun(sql);
+                                run.start();
+                            }
+
+                            Toast.makeText(Review_Write_View.this,"리뷰가 정상적으로 입력되었습니다.",Toast.LENGTH_SHORT).show();
+
+                            Intent intent = new Intent();
+                            intent.putExtra("review", review_write.getText().toString());
+                            intent.putExtra("rating", review_rating.getRating());
+                            intent.putExtra("kakaoID", user.getKakaoAccount().getProfile().getNickname());
+                            setResult(RESULT_OK, intent);
+                            finish();
+
+                            return null;
+                        }
+                    });
 
                 }
 
             }
         });
 
-        Intent getStoreInfo = getIntent();
-        String storeName = getStoreInfo.getStringExtra("name");
-        String storeAddr = getStoreInfo.getStringExtra("addr");
+
+
 
         SQLRun getReviewData = new SQLRun("SELECT * FROM reviewtable"
                 + " WHERE storename = '" + storeName + "'"
@@ -72,6 +110,7 @@ public class Review_Write_View extends AppCompatActivity {
             }
             if(getReviewData.getisFin()){
                 results = getReviewData.getValues();
+
                 break;
             }
 
@@ -90,7 +129,6 @@ public class Review_Write_View extends AppCompatActivity {
             }
 
             ListView review_write_listView;
-            ReviewAdapter adapter;
 
             adapter = new ReviewAdapter();
 

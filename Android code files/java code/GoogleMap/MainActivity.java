@@ -37,6 +37,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.clustering.ClusterManager;
 
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.Inflater;
@@ -49,8 +51,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     Button btn_search;
     ImageButton btn_filter;
     GoogleMap mMap;
-    Switch switch_mNp;
-    Switch switch_OnOff_Seller;
+    ImageButton mobileBtn;
+    ImageButton papaerBtn;
+    ImageButton bankBtn;
 
     LayoutInflater inflater_filter;
 
@@ -59,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     ArrayList<ArrayList<String>> mobData;
     ArrayList<ArrayList<String>> paperData;
     ArrayList<ArrayList<String>> reviewData;
+    ArrayList<ArrayList<String>> bankData;
 
     CustomAutoCompleteAdapter myAdapter;
     List<CustomItem> customItemList;
@@ -80,6 +84,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        getSupportActionBar().setIcon(R.drawable.mojitok);
+//        getSupportActionBar().setDisplayUseLogoEnabled(true);
+//        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -120,62 +128,83 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 getSubClassFilter = filterView.findViewById(R.id.filter_subClass);
                 getNameFilter = filterView.findViewById(R.id.filter_name);
 
-                if(switch_mNp.isChecked()){
-                    Add_Filter_AutoComplete(getAddrFilter, paperData.get(1));
-                    Add_Filter_AutoComplete(getClassFilter, paperData.get(2));
-                    Add_Filter_AutoComplete(getSubClassFilter, paperData.get(3));
-                    Add_Filter_AutoComplete(getNameFilter, paperData.get(4));
-                }else {
+                if(!mobileBtn.isEnabled()){
                     Add_Filter_AutoComplete(getAddrFilter, mobData.get(1));
                     Add_Filter_AutoComplete(getClassFilter, mobData.get(2));
                     Add_Filter_AutoComplete(getSubClassFilter, mobData.get(3));
                     Add_Filter_AutoComplete(getNameFilter, mobData.get(4));
+                }else if(!papaerBtn.isEnabled()){
+                    Add_Filter_AutoComplete(getAddrFilter, paperData.get(1));
+                    Add_Filter_AutoComplete(getClassFilter, paperData.get(2));
+                    Add_Filter_AutoComplete(getSubClassFilter, paperData.get(3));
+                    Add_Filter_AutoComplete(getNameFilter, paperData.get(4));
+                }else if(!bankBtn.isEnabled()){
+                    Add_Filter_AutoComplete(getAddrFilter, bankData.get(1));
+                    Add_Filter_AutoComplete(getClassFilter, bankData.get(2));
+                    Add_Filter_AutoComplete(getSubClassFilter, bankData.get(3));
+                    Add_Filter_AutoComplete(getNameFilter, bankData.get(4));
                 }
 
 
             }
         });
 
-        switch_mNp = findViewById(R.id.switch_mobNp);
-        switch_mNp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mobileBtn = findViewById(R.id.mobileData_btn);
+        mobileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+            public void onClick(View v) {
 
-                    switch_OnOff_Seller.setEnabled(true);
-                    switch_OnOff_Seller.setChecked(false);
+                mobileBtn.setEnabled(false);
+                papaerBtn.setEnabled(true);
+                bankBtn.setEnabled(true);
 
-                    clusterManager.getMarkerCollection().clear();
-                    clusterManager.getClusterMarkerCollection().clear();
-                    clusterManager.clearItems();
+                clusterManager.getMarkerCollection().clear();
+                clusterManager.getClusterMarkerCollection().clear();
+                clusterManager.clearItems();
 
-                    Add_ClusterItems(paperData, "", "", "", "");
-                    Add_AutoComplete(paperData, "", "", "", "");
-
-                }else {
-                    switch_OnOff_Seller.setEnabled(false);
-                    switch_OnOff_Seller.setChecked(false);
-
-                    clusterManager.getMarkerCollection().clear();
-                    clusterManager.getClusterMarkerCollection().clear();
-                    clusterManager.clearItems();
-
-                    Add_ClusterItems(mobData, "", "", "", "");
-                    Add_AutoComplete(mobData, "", "", "", "");
-
-                }
+                Add_ClusterItems(mobData, "", "", "", "");
+                Add_AutoComplete(mobData, "", "", "", "");
             }
         });
 
+        papaerBtn = findViewById(R.id.paperData_btn);
+        papaerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-        switch_OnOff_Seller = findViewById(R.id.switch_showSell);
-        switch_OnOff_Seller.setEnabled(false);
+                mobileBtn.setEnabled(true);
+                papaerBtn.setEnabled(false);
+                bankBtn.setEnabled(true);
+
+                clusterManager.getMarkerCollection().clear();
+                clusterManager.getClusterMarkerCollection().clear();
+                clusterManager.clearItems();
+
+                Add_ClusterItems(paperData, "", "", "", "");
+                Add_AutoComplete(paperData, "", "", "", "");
+            }
+        });
+
+        bankBtn = findViewById(R.id.bankData_btn);
+        bankBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mobileBtn.setEnabled(true);
+                papaerBtn.setEnabled(true);
+                bankBtn.setEnabled(false);
+
+                clusterManager.getMarkerCollection().clear();
+                clusterManager.getClusterMarkerCollection().clear();
+                clusterManager.clearItems();
+
+                Add_ClusterItems(bankData, "", "", "", "");
+                Add_AutoComplete(bankData, "", "", "", "");
+            }
+        });
+        mobileBtn.setEnabled(false);
 
         dataIO = new DataIO();
         dataIO.start();
-
-
-
 
     }
 
@@ -231,11 +260,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     data = mobData;
                 }else if(text_idx_info.split(" ")[0].equals("nuvisionpaper")){
                     data = paperData;
+                }else if(text_idx_info.split(" ")[0].equals("bankinfo")){
+                    data = bankData;
                 }else {
                     data = mobData;
                 }
-
-
 
                 storeClass.setText(data.get(2).get(idx));
                 storeSubClass.setText(data.get(3).get(idx));
@@ -244,23 +273,48 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 final RatingBar ratingBar = view.findViewById(R.id.store_rating_ratingBar);
                 final TextView ratings = view.findViewById(R.id.store_ratingTextView);
 
-                float rating_sum = 0;
-                int rating_count = 0;
-                for(int i = 1; i < reviewData.get(0).size(); i++){
-                    if(reviewData.get(1).get(i).equals(data.get(4).get(idx))
-                        && reviewData.get(2).get(i).equals(data.get(1).get(idx))){
-                        rating_sum += Float.valueOf(reviewData.get(4).get(i));
-                        rating_count++;
+                if(!data.equals(bankData)){
+                    float rating_sum = 0;
+                    int rating_count = 0;
+                    for(int i = 1; i < reviewData.get(0).size(); i++){
+                        if(reviewData.get(1).get(i).equals(data.get(4).get(idx))
+                                && reviewData.get(2).get(i).equals(data.get(1).get(idx))){
+                            rating_sum += Float.valueOf(reviewData.get(4).get(i));
+                            rating_count++;
+                        }
                     }
-                }
-                if(rating_count == 0){
-                    ratingBar.setRating(0f);
+                    if(rating_count == 0){
+                        ratingBar.setRating(0f);
+                    }else {
+                        ratingBar.setRating( rating_sum / rating_count);
+                        ratings.setText(String.format("%.1f", (rating_sum / rating_count)));
+                    }
+
+                    Log.d("Cluster", marker.getId());
                 }else {
-                    ratingBar.setRating( rating_sum / rating_count);
-                    ratings.setText("" + (rating_sum / rating_count));
+                    LinearLayout ratingLayout = view.findViewById(R.id.store_rating);
+                    ratingLayout.setVisibility(View.GONE);
+
+                    TextView banksubjText = view.findViewById(R.id.bankStokeSubj);
+                    banksubjText.setVisibility(View.VISIBLE);
+                    TextView bankDateText = view.findViewById(R.id.bankStokeDate);
+                    bankDateText.setVisibility(View.VISIBLE);
+                    String month = data.get(9).get(idx).split(" ")[1];
+                    String days = data.get(9).get(idx).split(" ")[2];
+                    bankDateText.setText(month + " " + days);
+
+                    LinearLayout bank5000Layout = view.findViewById(R.id.bankStoke5000Layout);
+                    bank5000Layout.setVisibility(View.VISIBLE);
+                    LinearLayout bank10000Layout = view.findViewById(R.id.bankStoke10000Layout);
+                    bank10000Layout.setVisibility(View.VISIBLE);
+
+                    TextView bank5000Text = view.findViewById(R.id.bankStoke5000Text);
+                    TextView bank10000Text = view.findViewById(R.id.bankStoke10000Text);
+
+                    bank5000Text.setText(data.get(7).get(idx) + "장");
+                    bank10000Text.setText(data.get(8).get(idx) + "장");
                 }
 
-                Log.d("Cluster", marker.getId());
                 return view;
             }
 
@@ -292,9 +346,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     intent.putExtra("class", paperData.get(2).get(tableIdx));
                     intent.putExtra("subClass", paperData.get(3).get(tableIdx));
                     intent.putExtra("name", paperData.get(4).get(tableIdx));
+                }else if(tableName.equals("bankinfo")){
+                    intent.putExtra("addr", bankData.get(1).get(tableIdx));
+                    intent.putExtra("class", bankData.get(2).get(tableIdx));
+                    intent.putExtra("subClass", bankData.get(3).get(tableIdx));
+                    intent.putExtra("name", bankData.get(4).get(tableIdx));
                 }
 
-                startActivity(intent);
+                startActivityForResult(intent, 666);
             }
         });
 
@@ -311,6 +370,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mobData = data;
                 paperData = dataIO.getpaperData();
                 reviewData = dataIO.getReviewData();
+                bankData = dataIO.getBankData();
 
                 // 자동 완성기능 붙이기
                 Add_AutoComplete(mobData, "", "", "", "");
@@ -377,7 +437,91 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     data.get(2).get(i).replace(" ", "").contains(filter_class.replace(" ", "")) &&
                     data.get(3).get(i).replace(" ", "").contains(filter_subClass.replace(" ", "")) &&
                     data.get(4).get(i).replace(" ", "").contains(filter_storename.replace(" ", ""))){
-                customItemList.add(new CustomItem(data.get(4).get(i), data.get(1).get(i), R.drawable.cafe, i));
+
+                int drowableSettings = R.drawable.store;
+
+                if(data.get(2).get(i).contains("카페") || data.get(2).get(i).contains("커피")){
+                    drowableSettings = R.drawable.cafe;
+                }else if(data.get(2).get(i).contains("가구")){
+                    drowableSettings = R.drawable.furniture;
+                }else if(data.get(2).get(i).contains("가발")){
+                    drowableSettings = R.drawable.wig;
+                }else if(data.get(2).get(i).contains("가전")){
+                    drowableSettings = R.drawable.homeapperance;
+                }else if(data.get(2).get(i).contains("광고") || data.get(2).get(i).contains("알림판")){
+                    drowableSettings = R.drawable.add;
+                }else if(data.get(2).get(i).contains("pc") || data.get(2).get(i).contains("컴퓨터")){
+                    drowableSettings = R.drawable.pc;
+                }else if(data.get(2).get(i).contains("음식") || data.get(2).get(i).contains("요식")){
+                    drowableSettings = R.drawable.foodchain;
+                }else if(data.get(2).get(i).contains("은행") || data.equals(bankData)){
+                    drowableSettings = R.drawable.bank;
+                }else if(data.get(2).get(i).contains("생화") || data.get(2).get(i).contains("꽃집")){
+                    drowableSettings = R.drawable.flower;
+                }else if(data.get(2).get(i).contains("학원") || data.get(2).get(i).contains("교습")){
+                    drowableSettings = R.drawable.study;
+                }else if(data.get(2).get(i).contains("서점") || data.get(2).get(i).contains("책방")){
+                    drowableSettings = R.drawable.book;
+                }else if(data.get(2).get(i).contains("치킨") || data.get(2).get(i).contains("통닭")){
+                    drowableSettings = R.drawable.chicken;
+                }else if(data.get(2).get(i).contains("부동산")){
+                    drowableSettings = R.drawable.house;
+                }else if(data.get(2).get(i).contains("건설") || data.get(2).get(i).contains("인테리어")){
+                    drowableSettings = R.drawable.build;
+                }else if(data.get(2).get(i).contains("옷가게") || data.get(2).get(i).contains("옷수선")
+                        || data.get(2).get(i).contains("한복")){
+                    drowableSettings = R.drawable.cloth;
+                }else if(data.get(2).get(i).contains("동물병원")){
+                    drowableSettings = R.drawable.pethospital;
+                }else if(data.get(2).get(i).contains("병원") || data.get(2).get(i).contains("한의원")){
+                    drowableSettings = R.drawable.hospital;
+                }else if(data.get(2).get(i).contains("미용실") || data.get(2).get(i).contains("이발소")){
+                    drowableSettings = R.drawable.haircut;
+                }else if(data.get(2).get(i).contains("도넛") || data.get(2).get(i).contains("분식")){
+                    drowableSettings = R.drawable.desert;
+                }else if(data.get(2).get(i).contains("수작업") || data.get(2).get(i).contains("공예")){
+                    drowableSettings = R.drawable.craft;
+                }else if(data.get(2).get(i).contains("과일") || data.get(2).get(i).contains("체소")){
+                    drowableSettings = R.drawable.froot;
+                }else if(data.get(2).get(i).contains("기계") || data.get(2).get(i).contains("공업")){
+                    drowableSettings = R.drawable.muchine;
+                }else if(data.get(2).get(i).contains("네일아트") || data.get(2).get(i).contains("손톱")){
+                    drowableSettings = R.drawable.nailart;
+                }else if(data.get(2).get(i).contains("법률") || data.get(2).get(i).contains("세무")){
+                    drowableSettings = R.drawable.law;
+                }else if(data.get(2).get(i).contains("노인") || data.get(2).get(i).contains("복지")){
+                    drowableSettings = R.drawable.elder;
+                }else if(data.get(2).get(i).contains("노래방")){
+                    drowableSettings = R.drawable.sing;
+                }else if(data.get(2).get(i).contains("뷰티") || data.get(2).get(i).contains("미용")){
+                    drowableSettings = R.drawable.beauty;
+                }else if(data.get(2).get(i).contains("프린트") || data.get(2).get(i).contains("복사")){
+                    drowableSettings = R.drawable.print;
+                }else if(data.get(2).get(i).contains("목욕")){
+                    drowableSettings = R.drawable.bath;
+                }else if(data.get(2).get(i).contains("술집") || data.get(2).get(i).contains("주류")){
+                    drowableSettings = R.drawable.beer;
+                }else if(data.get(2).get(i).contains("세탁")){
+                    drowableSettings = R.drawable.wash;
+                }else if(data.get(2).get(i).contains("육류") || data.get(2).get(i).contains("고기")){
+                    drowableSettings = R.drawable.meat;
+                }else if(data.get(2).get(i).contains("악세서리") || data.get(2).get(i).contains("보석")
+                        || data.get(2).get(i).contains("금은")){
+                    drowableSettings = R.drawable.accessories;
+                }else if(data.get(2).get(i).contains("애완동물") || data.get(2).get(i).contains("반려동물")){
+                    drowableSettings = R.drawable.pet;
+                }else if(data.get(2).get(i).contains("약국")){
+                    drowableSettings = R.drawable.parmacy;
+                }else if(data.get(2).get(i).contains("악기") || data.get(2).get(i).contains("피아노")){
+                    drowableSettings = R.drawable.instrument;
+                }else if(data.get(2).get(i).contains("자동차")){
+                    drowableSettings = R.drawable.car;
+                }else if(data.get(2).get(i).contains("공구")){
+                    drowableSettings = R.drawable.tool;
+                }else if(data.get(2).get(i).contains("편의점")){
+                    drowableSettings = R.drawable.store;
+                }
+                customItemList.add(new CustomItem(data.get(4).get(i), data.get(1).get(i), drowableSettings, i));
             }
 
         }
@@ -415,9 +559,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     data.get(4).get(i).replace(" ", "").contains(filter_storename.replace(" ", ""))){
 
                 int iconNum = 0;
-                if(data.get(2).get(i).contains("카페") || data.get(2).get(i).contains("커피")){
-                    iconNum = 21;
-                }
+
+                iconNum = getIconNum(data, i);
 
                 String tablename = "zeropaymobile";
 
@@ -425,6 +568,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     tablename = "zeropaymobile";
                 }else if(data.equals(paperData)){
                     tablename = "nuvisionpaper";
+                }else if(data.equals(bankData)){
+                    tablename = "bankinfo";
                 }
 
 
@@ -452,16 +597,106 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         clusterManager.getClusterMarkerCollection().clear();
         clusterManager.clearItems();
 
-        if(switch_mNp.isChecked()){
-            Add_AutoComplete(paperData, addr, classs, subClass, name);
-            Add_ClusterItems(paperData, addr, classs, subClass, name);
-        }else {
+        if(!mobileBtn.isEnabled()){
             Add_AutoComplete(mobData, addr, classs, subClass, name);
             Add_ClusterItems(mobData, addr, classs, subClass, name);
+        }else if(!papaerBtn.isEnabled()){
+            Add_AutoComplete(paperData, addr, classs, subClass, name);
+            Add_ClusterItems(paperData, addr, classs, subClass, name);
+        }else if(!bankBtn.isEnabled()){
+            Add_AutoComplete(bankData, addr, classs, subClass, name);
+            Add_ClusterItems(bankData, addr, classs, subClass, name);
         }
 
         btn_filter.setEnabled(true);
         filterLayout.removeAllViews();
+    }
+
+    private int getIconNum(ArrayList<ArrayList<String>> data, int i){
+        int iconNum = 0;
+        if(data.get(2).get(i).contains("카페") || data.get(2).get(i).contains("커피")){
+            iconNum = 21;
+        }else if(data.get(2).get(i).contains("가구")){
+            iconNum = 22;
+        }else if(data.get(2).get(i).contains("가발")){
+            iconNum = 23;
+        }else if(data.get(2).get(i).contains("가전")){
+            iconNum = 24;
+        }else if(data.get(2).get(i).contains("광고") || data.get(2).get(i).contains("알림판")){
+            iconNum = 25;
+        }else if(data.get(2).get(i).contains("pc") || data.get(2).get(i).contains("컴퓨터")){
+            iconNum = 26;
+        }else if(data.get(2).get(i).contains("음식") || data.get(2).get(i).contains("요식")){
+            iconNum = 27;
+        }else if(data.get(2).get(i).contains("은행") || data.equals(bankData)){
+            iconNum = 28;
+        }else if(data.get(2).get(i).contains("생화") || data.get(2).get(i).contains("꽃집")){
+            iconNum = 29;
+        }else if(data.get(2).get(i).contains("학원") || data.get(2).get(i).contains("교습")){
+            iconNum = 30;
+        }else if(data.get(2).get(i).contains("서점") || data.get(2).get(i).contains("책방")){
+            iconNum = 31;
+        }else if(data.get(2).get(i).contains("치킨") || data.get(2).get(i).contains("통닭")){
+            iconNum = 32;
+        }else if(data.get(2).get(i).contains("부동산")){
+            iconNum = 33;
+        }else if(data.get(2).get(i).contains("건설") || data.get(2).get(i).contains("인테리어")){
+            iconNum = 34;
+        }else if(data.get(2).get(i).contains("옷가게") || data.get(2).get(i).contains("옷수선")
+                || data.get(2).get(i).contains("한복")){
+            iconNum = 35;
+        }else if(data.get(2).get(i).contains("동물병원")){
+            iconNum = 38;
+        }else if(data.get(2).get(i).contains("병원") || data.get(2).get(i).contains("한의원")){
+            iconNum = 36;
+        }else if(data.get(2).get(i).contains("미용실") || data.get(2).get(i).contains("이발소")){
+            iconNum = 37;
+        }else if(data.get(2).get(i).contains("도넛") || data.get(2).get(i).contains("분식")){
+            iconNum = 39;
+        }else if(data.get(2).get(i).contains("수작업") || data.get(2).get(i).contains("공예")){
+            iconNum = 40;
+        }else if(data.get(2).get(i).contains("과일") || data.get(2).get(i).contains("체소")){
+            iconNum = 41;
+        }else if(data.get(2).get(i).contains("기계") || data.get(2).get(i).contains("공업")){
+            iconNum = 42;
+        }else if(data.get(2).get(i).contains("네일아트") || data.get(2).get(i).contains("손톱")){
+            iconNum = 43;
+        }else if(data.get(2).get(i).contains("법률") || data.get(2).get(i).contains("세무")){
+            iconNum = 44;
+        }else if(data.get(2).get(i).contains("노인") || data.get(2).get(i).contains("복지")){
+            iconNum = 45;
+        }else if(data.get(2).get(i).contains("노래방")){
+            iconNum = 46;
+        }else if(data.get(2).get(i).contains("뷰티") || data.get(2).get(i).contains("미용")){
+            iconNum = 47;
+        }else if(data.get(2).get(i).contains("프린트") || data.get(2).get(i).contains("복사")){
+            iconNum = 48;
+        }else if(data.get(2).get(i).contains("목욕")){
+            iconNum = 49;
+        }else if(data.get(2).get(i).contains("술집") || data.get(2).get(i).contains("주류")){
+            iconNum = 50;
+        }else if(data.get(2).get(i).contains("세탁")){
+            iconNum = 51;
+        }else if(data.get(2).get(i).contains("육류") || data.get(2).get(i).contains("고기")){
+            iconNum = 52;
+        }else if(data.get(2).get(i).contains("악세서리") || data.get(2).get(i).contains("보석")
+                || data.get(2).get(i).contains("금은")){
+            iconNum = 53;
+        }else if(data.get(2).get(i).contains("애완동물") || data.get(2).get(i).contains("반려동물")){
+            iconNum = 54;
+        }else if(data.get(2).get(i).contains("약국")){
+            iconNum = 55;
+        }else if(data.get(2).get(i).contains("악기") || data.get(2).get(i).contains("피아노")){
+            iconNum = 56;
+        }else if(data.get(2).get(i).contains("자동차")){
+            iconNum = 59;
+        }else if(data.get(2).get(i).contains("공구")){
+            iconNum = 60;
+        }else if(data.get(2).get(i).contains("편의점")){
+            iconNum = 61;
+        }
+
+        return iconNum;
     }
 }
 

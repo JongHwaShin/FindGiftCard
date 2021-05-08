@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,7 +22,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kakao.sdk.user.UserApiClient;
 import com.kakao.sdk.user.model.User;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
@@ -36,6 +39,12 @@ public class Store_main extends AppCompatActivity {
     private RatingBar store_RatingBar;
     private TextView store_RatingText;
 
+    ReviewAdapter adapter;
+
+    String storeName;
+    String storeAddr;
+    String storeClass;
+    String storeSubClass;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState){
@@ -51,10 +60,10 @@ public class Store_main extends AppCompatActivity {
         store_RatingText = findViewById(R.id.store_ratingTextView);
 
         Intent getStoreInfo = getIntent();
-        String storeName = getStoreInfo.getStringExtra("name");
-        String storeAddr = getStoreInfo.getStringExtra("addr");
-        String storeClass = getStoreInfo.getStringExtra("class");
-        String storeSubClass = getStoreInfo.getStringExtra("subClass");
+        storeName = getStoreInfo.getStringExtra("name");
+        storeAddr = getStoreInfo.getStringExtra("addr");
+        storeClass = getStoreInfo.getStringExtra("class");
+        storeSubClass = getStoreInfo.getStringExtra("subClass");
 
         storename_TextView.setText(storeName);
         addr_TextView.setText(storeAddr);
@@ -72,7 +81,7 @@ public class Store_main extends AppCompatActivity {
                             Intent intent = new Intent(getApplicationContext(),Review_Write_View.class);
                             intent.putExtra("name", storeName);
                             intent.putExtra("addr", storeAddr);
-                            startActivity(intent);
+                            startActivityForResult(intent, 444);
 
                         }
                         else {
@@ -84,66 +93,16 @@ public class Store_main extends AppCompatActivity {
             }
         });
 
-        SQLRun getReviewData = new SQLRun("SELECT * FROM reviewtable"
-                        + " WHERE storename = '" + storeName + "'"
-                        + " AND addr = '" + storeAddr + "';");
-        getReviewData.start();
+        ListView store_main_review;
 
-        String results = "";
+        // 어뎁터생성
+        adapter = new ReviewAdapter();
 
-        while (true){
-            try {
-                Thread.sleep(300);
-            }catch (InterruptedException e){
+        store_main_review = (ListView)findViewById(R.id.storeRatingListView);
+        store_main_review.setAdapter(adapter);
 
-            }
-            if(getReviewData.getisFin()){
-                results = getReviewData.getValues();
-                break;
-            }
-
-        }
-
-        if(results != null && results.contains("\n")){
-            ArrayList<ArrayList<String>> reviewData = new ArrayList<ArrayList<String>>();
-            String [] rows = results.split("\n");
-            for(int i = 0; i < rows.length; i++) {
-                String [] data = rows[i].split(",");
-                ArrayList<String> row = new ArrayList<String>();
-                for(int j = 0; j < data.length; j++){
-                    row.add(data[j]);
-                }
-                reviewData.add(row);
-            }
-
-            ListView store_main_review;
-            ReviewAdapter adapter;
-
-            // 어뎁터생성
-            adapter = new ReviewAdapter();
-
-            store_main_review = (ListView)findViewById(R.id.storeRatingListView);
-            store_main_review.setAdapter(adapter);
-
-            float sum = 0f;
-            int count = 0;
-            for(int i = 1; i < reviewData.get(0).size(); i++){
-                adapter.addItem(reviewData.get(6).get(i), Float.valueOf(reviewData.get(4).get(i))
-                        , reviewData.get(5).get(i), reviewData.get(3).get(i));
-
-                sum += Float.valueOf(reviewData.get(4).get(i));
-                count++;
-
-            }
-
-            if(count != 0){
-                store_RatingBar.setRating(sum / count);
-                store_RatingText.setText("" + (sum / count));
-            }
-        }
-
+        setReview();
         //adapter.addItem("신종화", (float) 3.4,"2020-1-2","맛있어요");
-
 
     }
     // 로그인 안돼있으면 로그인하겠습니까 라고 띄워주는 Alert창
@@ -193,6 +152,80 @@ public class Store_main extends AppCompatActivity {
                 return true;
         }
         return false;
+    }
+
+    private void setReview(){
+        SQLRun getReviewData = new SQLRun("SELECT * FROM reviewtable"
+                + " WHERE storename = '" + storeName + "'"
+                + " AND addr = '" + storeAddr + "';");
+        getReviewData.start();
+
+        String results = "";
+
+        while (true){
+            try {
+                Thread.sleep(300);
+            }catch (InterruptedException e){
+
+            }
+            if(getReviewData.getisFin()){
+                results = getReviewData.getValues();
+                break;
+            }
+
+        }
+
+        if(results != null && results.contains("\n")){
+            ArrayList<ArrayList<String>> reviewData = new ArrayList<ArrayList<String>>();
+            String [] rows = results.split("\n");
+            for(int i = 0; i < rows.length; i++) {
+                String [] data = rows[i].split(",");
+                ArrayList<String> row = new ArrayList<String>();
+                for(int j = 0; j < data.length; j++){
+                    row.add(data[j]);
+                }
+                reviewData.add(row);
+            }
+
+            float sum = 0f;
+            int count = 0;
+            for(int i = 1; i < reviewData.get(0).size(); i++){
+                adapter.addItem(reviewData.get(6).get(i), Float.valueOf(reviewData.get(4).get(i))
+                        , reviewData.get(5).get(i), reviewData.get(3).get(i));
+
+                sum += Float.valueOf(reviewData.get(4).get(i));
+                count++;
+
+            }
+
+            if(count != 0){
+                store_RatingBar.setRating(sum / count);
+                store_RatingText.setText("" + (sum / count));
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == 444){
+            if(resultCode == RESULT_OK){
+                Log.d("AdapterTest", "read");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = new Date();
+                String time = dateFormat.format(date);
+
+                String id = data.getStringExtra("kakaoID");
+                float rating = data.getFloatExtra("rating", 0);
+                String review = data.getStringExtra("review");
+
+                Log.d("adapterTest", id + rating + review);
+
+                adapter.addItem(id, rating, time, review);
+
+            }
+        }
     }
 
 

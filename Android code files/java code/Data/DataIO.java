@@ -45,6 +45,7 @@ public class DataIO extends Thread {
     private ArrayList<ArrayList<String>> zeropayData;
     private ArrayList<ArrayList<String>> paperData;
     private ArrayList<ArrayList<String>> reviewData;
+    private ArrayList<ArrayList<String>> bankData;
 
     public boolean getIsDataLoadFin() {
         return isDataLoadFin;
@@ -57,6 +58,9 @@ public class DataIO extends Thread {
     }
     public ArrayList<ArrayList<String>> getReviewData() {
         return reviewData;
+    }
+    public ArrayList<ArrayList<String>> getBankData() {
+        return bankData;
     }
 
 
@@ -82,9 +86,13 @@ public class DataIO extends Thread {
             reviewData = review;
         }
 
+        if(bankData == null) {
+            String banktable = "bankinfo";
+            ArrayList<ArrayList<String>> bankinfo = getTable(banktable);
+            bankData = bankinfo;
+        }
 
-
-        //LocationUpdate(paper, tablename2);
+        //LocationUpdate(bankData, "bankinfo");
 
         isDataLoadFin = true;
 
@@ -214,7 +222,7 @@ public class DataIO extends Thread {
 
     private void LocationUpdate(ArrayList<ArrayList<String>> data, String tablename) {
 
-        int control_str_length = 6; 
+        int control_str_length = 6;
         String update_query = "UPDATE " + tablename + " SET %0A";
         String lat_condition = "";
         String lng_condition = "";
