@@ -10,37 +10,42 @@
     각 코드별 상세 설명은 각각의 폴더안에 있다.
 
 
-### Data
+### 1. Data
 
     위 폴더의 코드들은 MySQL 서버, API등을 통하여 필요한 데이터들을 주고 받는 기능을 한다.
 
-###### DataIO
+###### 1.1 DataIO
     
     지도 위의 마커를 찍는데 필요한 데이터, 리뷰에 대한 데이터들을 얻어온다.
     그리고 도로명 주소를 받아서 그에 대한 좌표값을 계산하여 쿼리문을 제작한다.
+    상단의 URL 들을 실제 mysql 서버로 수정해야 정확한 동작을 한다.
 
-###### SQLRun
+###### 1.2 SQLRun
     
     Mysql에 쿼리문을 보내어 값을 입력, 출력하는데 쓰인다.
 
 
-### GoogleMap
+### 2. GoogleMap
 
     위 폴더의 코드들은 Google Map API를 통하여 지도를 그려준다,
     그리고 위 지도를 통하여 원하는 지점의 위치와 정보 길찾기 서비스 등을 제공한다.
 
-###### MainActivity
+###### 2.1 MainActivity
 
     위 코드는 구글 맵을 뿌려주는 화면을 구성하는 클래스이다.
 
-###### CustomAutoCompleteAdapter
+###### 2.2 CustomAutoCompleteAdapter
 
     위 코드는 기존에 제공되는 AutoCompleteTextView를 커스터마이징 한 것 이다.
+
 
 ###### MarkerRenderer, MyItem
 
     위 코드는 기존에 제공되는 Google Map api의 Clustering 기능을 커스터마이징 한 것 이다.
     참고로 Clustering 이란 마커가 한 지역에 일정수 이상 몰릴 시 마커들을 합쳐서 보여주는 것 이다.
+
+    아래 사이트의 소스 코드를 참고하였다.
+    >> https://medium.com/flearning-edu/%EC%95%88%EB%93%9C%EB%A1%9C%EC%9D%B4%EB%93%9C-%EA%B5%AC%EA%B8%80%EB%A7%B5-%EB%A7%88%EC%BB%A4-%ED%81%B4%EB%9F%AC%EC%8A%A4%ED%84%B0%EB%A7%81-%ED%95%B4%EB%B3%B4%EA%B8%B0-part-1-514bbd351378
 
 ### Keys
 

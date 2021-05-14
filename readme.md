@@ -5,7 +5,8 @@
     2. 앱의 기능
     3. UI
     4. 데이터 소스 및 API
-    5. 참고자료
+    5. 데이터 전처리 과정
+    6. Node Js 서버 구성
 
 ## 1. 앱 간단소계
 
@@ -81,6 +82,12 @@
 
 <img src="./img/test/필터자동완성.png"/>
 <img src="./img/test/필터링완료.png"/>
+
+### 2.6 안드로이드 코드
+
+    Andriod code files 내부에 기능별로 구분하여 코드파일 및 설명들을 넣어두었으니 들어가 참고하시길 바랍니다.
+
+<./Android code files/>
 
 ## 3. UI
 
@@ -179,7 +186,7 @@
 
 <img src = "./img/data_source/데이터전처리8.png"/>
 
-## 6. 서버 Node Js
+## 6. Node Js 서버 구성
 
     서버의 역할은 위에서도 설명하였다 싶이, 
     mysql과 android studio 를 이어주는 교두보 역할을 한다.
@@ -286,3 +293,5 @@
 
 ## 참고자료
 
+    [5.3] Mr Data Converter : https://shancarter.github.io/mr-data-converter/
+    [6.1.1] express 공식 문서 : https://expressjs.com/ko/
